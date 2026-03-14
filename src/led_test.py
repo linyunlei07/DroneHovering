@@ -1,6 +1,5 @@
 """
-test to see if laptop can connect to drone, through the blingink of leds
-"""
+test to see if laptop can connect to drone, through the blingink of"""
 
 
 # led_test.py

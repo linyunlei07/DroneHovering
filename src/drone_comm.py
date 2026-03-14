@@ -28,7 +28,7 @@ which will lead to increased drift
 """
 
 
-
+import time 
 import socket
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -44,6 +44,11 @@ def msg(tx):
 
 def emergency_stop():
     msg("mode0")
+    
+    green_LED(1)
+    print("Blue LED ON")
+    time.sleep(1)
+    
 
 def e():
     emergency_stop()

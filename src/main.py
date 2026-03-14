@@ -17,12 +17,12 @@ def main():
     cap = cv2.VideoCapture(1) # Using your working laptop camera
     
     # this controls up down 
-    target_thrust = 80 
+    target_thrust = 70
     
     print("Connecting to Drone...")
 
 
-    drone.emergency_stop()
+    # drone.emergency_stop()
     drone.set_mode(2) # Enable stable mode to unlock motors
 
     drone.blue_LED(1) 

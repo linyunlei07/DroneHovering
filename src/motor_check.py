@@ -15,13 +15,13 @@ def spin_test():
     drone.set_mode(2) 
     time.sleep(0.5)
     
-    # 2. Send 'Idle' Thrust (40 is usually the minimum to overcome friction)
+    # 2. Send 'Idle' Thrust (40 is usually the minimum to overcpome friction)
     # manual_thrusts(MotorA, MotorB, MotorC, MotorD)
     print("Sending Idle Thrust (40/250)...")
     drone.manual_thrusts(40, 40, 40, 40)
     
     # 3. Spin for 3 seconds so you can verify all 4 motors are working
-    time.sleep(3)
+    time.sleep(10)
     
     # 4. Mandatory Kill Command
     print("Shutting down.")
