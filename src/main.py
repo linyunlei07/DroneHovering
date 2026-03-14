@@ -1,8 +1,9 @@
-# This script runs on the drone. Its main job is to listen for UDP packets 
-# and translate them into motor speeds using a basic PID for leveling.
-
 """
 KEEPS EVERYTHING RUNNING IN A CYCLE 
+
+- 'cv2.VideoCapture' : connect to the two cameras
+- 'cv2.imshow' : opens and external window to see what the camera "sees"
+- 'cv2.waitKey' : waits for our commands (through keyboards) 
 
 """
 
@@ -61,12 +62,14 @@ def main():
             # --- INPUT HANDLING ---
             key = cv2.waitKey(1) & 0xFF
             
-            # MANDATORY MANUAL EMERGENCY STOP [cite: 29, 31]
+            # MANDATORY MANUAL EMERGENCY STOPS: 
+            # "panic exit"
             if key == ord(' '):
                 print("!!! MANUAL EMERGENCY STOP TRIGGERED !!!")
                 drone.emergency_stop()
                 break
-                
+            
+            # "soft exit" 
             if key == ord('q'):
                 drone.emergency_stop()
                 break

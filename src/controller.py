@@ -1,12 +1,20 @@
 #PID or control logic
 
 """
-THIS IS THE BRAIN 
-- makes the adjustement needed to keep the drone in place 
+2. THIS IS THE BRAIN 
+INPUT : makes the adjustement needed to keep the drone in place, accoriding to 'vision.py' data
+OUTPUT : ends up calculating an output value so we can tell the motor to, speed up, slow down for ex. 
 
--> Calculates the "Math" (PID), 
--> it compares where the drone is vs. where it should be (0.5m).
+
+Using PIDController to implement a feedback loop
+- P (Proportional): Corrects based on how far away you are from the 0.5m target
+- I (Integral): Fixes small, persistent errors (like a slight breeze pushing the drone)
+- D (Derivative): Predicts the drone's momentum to prevent it from "overshooting" and hitting the ceiling
+
+
 """
+
+
 
 
 class PIDController:

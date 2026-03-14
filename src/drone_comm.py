@@ -3,9 +3,20 @@
 # initially called drone rc.py
 
 """
-USED TO COMMUNICATE WITH THE DRONE 
+3. ESTABLISH CONNECTION WITH THE DRONE (Handshake)
 
--> it will take our python command and send them over Wifi to the ESP32 chip
+- 'socket.connect' : Establishes the TCP link to 192.168.4.1 on port 8080
+- 'msg()' : that converts Python strings (commands) into ASCII bytes the drone can read
+- 'set_mode(2)' : 
+    - mode 0 : done's motor = stoped
+    - mode 1 : allows user to input to manually control each motor
+    - mode 2: done's internal "autopilot" mode (this will be used to handle the "automatic" hovering)
+        - drone: ORIENTATION
+            - use its MPU6050 sensor (gyroscope and accelerometer), to calculate its orientation (aka tilt)
+        - python LEVELING
+            - correction of the drone when it leaves the 0.5m
+- 'emergency_stop()' : makes the mode = 0, aka stoping the drones' motors
+
 
 
 general advice:
@@ -21,7 +32,7 @@ which will lead to increased drift
 import socket
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.connect(("192.168.4.1", 8080))
+s.connect(("192.168.4.1", 8080))            # IP adress
 
 def msg(tx):
     s.sendall((tx + "\n").encode("ASCII"))

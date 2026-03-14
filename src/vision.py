@@ -1,12 +1,20 @@
 # Drone detection & tracking (OpenCV)
 
 """ 
-THIS IS THE EYES 
-- sees the world (through the two cameras), but you need to make sense of it. 
-- therefore we need to process the image 
+1. THIS IS THE EYES 
+- through the camera, it takes raw pixels and turns them into data
+-> using the camera we find where the drone is (x, y, z) in the box
+-> tracking using the camera's LED 
 
 Essentially: 
 takes the camera feed and finds the (x, y) pixel location of the drone's LED 
+
+
+Functions: 
+'cv2.cvtColor' : converts usual video (RGB) to HSV 
+'cv2.inRange' : this is a colorFilter. turns LED color into WHITE, everything else into BLACK
+'cv2.findContours' : this finds the WHITE (among the blacked out plane)
+'cv2.moments' : math function that calculates the center of the drone (according to the 4 LEDs)
 
 """
 

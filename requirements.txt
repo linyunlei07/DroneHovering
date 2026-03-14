@@ -1,7 +1,0 @@
-# List of all libraries
-# Ensures that when the event staff runs your code, all dependencies will be the same
-
-opencv-python==4.8.1.78
-numpy==1.26.0
-pyserial==3.5
-# Note: Add the 'Custom Made Library' name here once it is announced by the organizers.
