@@ -1,3 +1,8 @@
+"""
+test to see if laptop can connect to drone, through the blingink of leds
+"""
+
+
 # led_test.py
 import drone_comm as drone
 import time
