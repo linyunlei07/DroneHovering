@@ -7,78 +7,73 @@ KEEPS EVERYTHING RUNNING IN A CYCLE
 
 """
 
+
+
 import cv2
-import time
+import drone_comm as drone
 from vision import DroneTracker
-import drone_comm as drone  
-from controller import PIDController
+
 
 def main():
-
-    # 1. Setup Video Capture for two cameras 
-    cam_top = cv2.VideoCapture(0)       
-    cam_side = cv2.VideoCapture(1)
+    # 1. Initialize Components
+    tracker = DroneTracker()
+    cap = cv2.VideoCapture(1) # Your working laptop camera
     
-    # # Target height is ~0.5m
-    # # We map 0.5m to a pixel value in our cage coordinate system
-    # height_pid = PIDController(kp=0.5, ki=0.1, kd=0.05, target=240) 
+    # 2. Starting baseline thrust (Equilibrium is usually around 140-160)
+    target_thrust = 140 
     
-    # last_time = time.time()
+    print("Connecting to Drone...")
+    drone.set_mode(2) # Enable internal PID stabilization
+    drone.blue_LED(1) # System Ready Signal
 
-
-    # 2. Initialize Connection
-    # The drone_comm script connects to 192.168.4.1:8080 automatically on import
-    print("Connecting to ESP32-S2...")
-    drone.set_mode(2)  # Set to PID mod                                                                                                                                                                                                                                                             e for stable pitch/roll 
-    drone.blue_LED(1)  # Turn on Blue LED to signify system is ready
-
-
-    # Target values
-    target_thrust = 150  # Starting baseline thrust (range 0-250)
-
-    print("CONTROL: Press 'SPACE' for EMERGENCY STOP | 'Q' to Quit")
+    print("\n--- MANUAL OVERRIDE ACTIVE ---")
+    print("UP ARROW: Increase Thrust | DOWN ARROW: Decrease Thrust")
+    print("SPACEBAR: EMERGENCY STOP | Q: Quit")
 
     try:
         while True:
-            ret_t, frame_top = cam_top.read()
-            ret_s, frame_side = cam_side.read()
+            ret, frame = cap.read()
+            if not ret: break
 
-            if not ret_t or not ret_s:
-                print("Failed to grab frames")
-                break
-
-            # --- VISION PROCESSING ---
-            # (Insert your logic here to find drone x, y, z) [cite: 15, 16]
+            # 3. Vision Processing (The 'Eyes')
+            #coords = tracker.get_drone_coords(frame, cam_id=1)
             
-            # --- FLIGHT LOGIC ---
-            # To avoid high-bandwidth lag, only send updates periodically
-            # Example: Maintain 0.5m height by adjusting manual_thrusts 
-            drone.manual_thrusts(target_thrust, target_thrust, target_thrust, target_thrust)
+            # if coords:
+            #     # Draw the tracking circle
+            #     cv2.circle(frame, coords, 15, (0, 255, 0), 2)
+            #     cv2.putText(frame, f"Y-Pixel: {coords[1]}", (10, 80), 
+            #                 cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
 
-            # Display feeds
-            cv2.imshow('Top View', frame_top)
-            cv2.imshow('Side View', frame_side)
+            # # 4. Telemetry Overlay
+            # cv2.putText(frame, f"Thrust: {target_thrust}", (10, 30), 
+            #             cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+            # cv2.imshow('Flight Dashboard', frame)
 
-            # --- INPUT HANDLING ---
+            # # 5. Continuous Command Sending (Must keep drone awake)
+            # # Sends same thrust to all 4 motors A, B, C, D
+            # drone.manual_thrusts(target_thrust, target_thrust, target_thrust, target_thrust)
+
+            # # 6. Input Handling
             key = cv2.waitKey(1) & 0xFF
             
-            # MANDATORY MANUAL EMERGENCY STOPS: 
-            # "panic exit"
-            if key == ord(' '):
-                print("!!! MANUAL EMERGENCY STOP TRIGGERED !!!")
+            if key == ord(' '): # Panic Button
+                print("!!! EMERGENCY STOP !!!")
                 drone.emergency_stop()
                 break
-            
-            # "soft exit" 
-            if key == ord('q'):
+            elif key == 'W': # Mac Up Arrow (Try 0 if this doesn't work)
+                target_thrust += 2
+            elif key == 'S': # Mac Down Arrow
+                target_thrust -= 2
+            elif key == ord('q'):
                 drone.emergency_stop()
                 break
 
     except Exception as e:
-        print(f"Error occurred: {e}")
-        drone.emergency_stop() # Safety first!
-
+        print(f"Error: {e}")
+        drone.emergency_stop()
     finally:
-        cam_top.release()
-        cam_side.release()
+        cap.release()
         cv2.destroyAllWindows()
+
+if __name__ == "__main__":
+    main()
