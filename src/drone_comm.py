@@ -3,7 +3,10 @@
 # initially called drone rc.py
 
 """
-The following functions can be used to communicate with the drone
+USED TO COMMUNICATE WITH THE DRONE 
+
+-> it will take our python command and send them over Wifi to the ESP32 chip
+
 
 general advice:
 do not have constant high-bandwidth communications with the drone,
@@ -12,8 +15,6 @@ which will lead to increased drift
 
 - this code handles the socket connection and command formatting
 """
-
-
 
 
 

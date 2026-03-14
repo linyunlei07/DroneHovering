@@ -1,5 +1,14 @@
 # Drone detection & tracking (OpenCV)
 
+""" 
+THIS IS THE EYES 
+- sees the world (through the two cameras), but you need to make sense of it. 
+- therefore we need to process the image 
+
+Essentially: 
+takes the camera feed and finds the (x, y) pixel location of the drone's LED 
+
+"""
 
 import cv2
 import numpy as np

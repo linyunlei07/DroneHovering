@@ -1,5 +1,13 @@
 #PID or control logic
 
+"""
+THIS IS THE BRAIN 
+- makes the adjustement needed to keep the drone in place 
+
+-> Calculates the "Math" (PID), 
+-> it compares where the drone is vs. where it should be (0.5m).
+"""
+
 
 class PIDController:
     def __init__(self, kp, ki, kd, target):
