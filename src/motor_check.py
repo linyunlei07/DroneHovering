@@ -1,3 +1,5 @@
+# this is not working, run directly on main
+
 """
 run this, to check if the motor will spin
 """
