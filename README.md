@@ -55,6 +55,9 @@ The `DroneTracker` uses **Color Excess filtering** to isolate LEDs:
 
 ## Team 
 Minh Duc Hoang
+
 Kevin Cui
+
 Monique Machioudi 
+
 Yun Lei Lin
