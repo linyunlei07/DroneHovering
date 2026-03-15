@@ -51,3 +51,10 @@ The `DroneTracker` uses **Color Excess filtering** to isolate LEDs:
 3. **Dependencies**:
    ```bash
    pip install opencv-python numpy
+   ```
+
+## Team 
+Minh Duc Hoang
+Kevin Cui
+Monique Machioudi 
+Yun Lei Lin
