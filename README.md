@@ -1,32 +1,53 @@
-# DroneHovering
+# Vision-Stabilized PID Drone Controller
 
-####
-FIXME : Reformat the file, such that it does not look like it was copied from Gemini 
-#####
+This project implements a real-time, 3D vision-based flight control system for a quadcopter. It uses two cameras (Front and Side) to track the drone's position via LED detection and stabilizes flight using a custom PID architecture integrated with the drone's onboard autopilot.
 
+---
 
-Team [Your Name] - Vision-Based Autonomous HoverOverviewThis system enables an ESP32-S2-MINI drone to maintain a stable hover at 0.5m within a $1\text{m} \times 1\text{m} \times 1\text{m}$ flight cage. It utilizes two external USB cameras to triangulate position and sends real-time control commands via Python
+## Project Architecture
 
+The system consists of three core modules designed to handle high-latency wireless communication while maintaining precise stabilization:
 
-System ArchitectureVision: Uses OpenCV to track the drone's built-in LED. By processing two feeds, we calculate $(x, y, z)$ coordinates.Estimation: Coordinates are filtered to reduce noise from camera latency.Control: A PID Controller (Proportional-Integral-Derivative) adjusts throttle, pitch, and roll to maintain the target zone.Safety: A dedicated Emergency Stop function is mapped to the SPACE key to immediately terminate flight.
+* **`main.py`**: The central control loop coordinating vision data, PID logic, and safety interlocks.
+* **`vision.py`**: The "Eyes" of the system, using OpenCV to detect and smooth the $(x, y)$ coordinates of the drone's LEDs.
+* **`drone_comm.py`**: The communication interface handling the TCP socket handshake and command formatting for the drone hardware.
 
+---
 
-How to Run
-Activate the virtual environment: source drone_env/bin/activate.
+## Key Features
 
-Install dependencies: pip install -r requirements.txt.
-
-Run the main script: python main.py.
-
-
-2. Triangulation Logic (The Math)Since the cameras are fixed at known positions overlooking the cage, you can estimate the drone's 3D position by combining the 2D data from each camera.$$x_{pos} \approx \text{Camera 1 (Horizontal Pixel Value)}$$$$y_{pos} \approx \text{Camera 2 (Horizontal Pixel Value)}$$$$z_{pos} \approx \text{Average (Vertical Pixel Value from both)}$$
-
-
-
-3. Handling the "Disturbance Test" (Bonus Points)
-The rubric offers a 20% bonus for handling external disturbances. To prepare for this:
-
-Increase your "D" (Derivative) gain: In a PID controller, the Derivative term helps resist sudden changes (like someone blowing air on the drone).
+### 1. 3D PID Stabilization
+The controller utilizes three independent PID loops to maintain a stable hover:
+* **X-Axis (Roll)**: Corrects left/right drift using the Front camera.
+* **Y-Axis (Pitch)**: Corrects forward/backward drift using the Side camera.
+* **Z-Axis (Thrust)**: Maintains vertical altitude relative to the center of the frame.
 
 
-Sampling Rate: Ensure your Python loop is running fast enough (at least 30-60 FPS) so the cameras catch the disturbance immediately.
+
+### 2. Intelligent Takeoff
+Instead of a hardcoded thrust value, the system employs a dynamic ramp-up:
+* It monitors the floor position (`initial_z`).
+* It increments thrust gradually until vertical displacement is detected.
+* Active flight mode triggers automatically once lift-off is confirmed.
+
+### 3. Advanced Vision Processing
+The `DroneTracker` uses **Color Excess filtering** to isolate LEDs:
+* It identifies pixels where a specific color is significantly more dominant than others to reduce interference from ambient light.
+* A **Signal Filter** (Low-Pass Filter) is applied to coordinates to prevent motor "jitter" caused by camera sensor noise.
+
+### 4. Triple-Layer Safety
+* **Watchdog Timer**: Kills motors if the vision stream hangs for more than 0.5 seconds.
+* **Tilt-Limit Detection**: Monitors the onboard MPU6050; if the drone tilts beyond 25°, the system executes an emergency stop.
+* **dt Normalization**: Caps time-delta calculations to 100ms to prevent power spikes during CPU lag.
+
+---
+
+## Installation & Setup
+
+1. **Hardware Connection**: Ensure your computer is connected to the drone's Wi-Fi Access Point (Default: `192.168.4.1`).
+2. **Camera Placement**: 
+    * **Camera 0**: Positioned in front of the flight area (X/Z tracking).
+    * **Camera 1**: Positioned to the side of the flight area (Y tracking).
+3. **Dependencies**:
+   ```bash
+   pip install opencv-python numpy
